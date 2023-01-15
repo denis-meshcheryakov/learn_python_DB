@@ -1,4 +1,5 @@
 import csv
+import time
 
 from db import db_session
 from model_2 import Salary
@@ -25,5 +26,27 @@ def save_salary_data(row):
     db_session.commit()
 
 
+def read_csv2(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        fields = ['name', 'city', 'address',
+                  'company', 'job', 'phone_number',
+                  'email', 'date_of_birth', 'salary']
+        reader = csv.DictReader(f, fields, delimiter=';')
+        salary_data = []
+        for row in reader:
+            salary_data.append(row)
+        save_salary_data2(salary_data)
+
+
+def save_salary_data2(data):
+    db_session.bulk_insert_mappings(Salary, data)
+    db_session.commit()
+
 if __name__ == "__main__":
-    read_csv('salary.csv')
+    # start = time.time()
+    # read_csv('salary.csv')
+    # print(f'Загрузка1 заняла {time.time() - start} сек.')
+
+    start = time.time()
+    read_csv2('salary.csv')
+    print(f'Загрузка2 заняла {time.time() - start} сек.')
